@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import apiClient from "@/lib/apiClient";
@@ -16,7 +18,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      await apiClient.post("/auth/register", {
+      await apiClient.post("/users/register", {
         username,
         email,
         password,
@@ -35,8 +37,8 @@ const Signup = () => {
         className="flex flex-col justify-center sm:px-6 lg:px-8"
       >
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            Sign Up
+          <h2 className="text-center text-3xl tracking-wider font-semibold text-indigo-700">
+            アカウントを作成する
           </h2>
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -47,7 +49,7 @@ const Signup = () => {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Username
+                  ユーザー名
                 </label>
                 <input
                   onChange={(e) => setUsername(e.target.value)}
@@ -64,7 +66,7 @@ const Signup = () => {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email
+                  Eメール
                 </label>
                 <input
                   onChange={(e) => setEmail(e.target.value)}
@@ -81,7 +83,7 @@ const Signup = () => {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+                  パスワード
                 </label>
                 <input
                   onChange={(e) => setPassword(e.target.value)}
@@ -98,13 +100,19 @@ const Signup = () => {
                   type="submit"
                   className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  SIGN UP
+                  アカウント作成
                 </button>
+                <div className="mt-4 text-right">
+                  <Link href="/login" className="text-blue-700 hover:underline">
+                    すでにアカウントをお持ちの方はこちら
+                  </Link>
+                </div>
               </div>
             </form>
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

@@ -4,41 +4,43 @@ import CommentPost from "./CommentPost";
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/apiClient";
 
-const Timeline = () => {
+const Timeline = ({ postId }) => {
   const [text, setText] = useState();
   const [commentsArray, setCommentsArray] = useState([]);
 
-  //Fetch comments from database
+  //ブログ記事ごとのコメント取得
   useEffect(() => {
-    async function fetchLatestComments() {
+    async function fetchComments() {
       try {
-        const response = await apiClient.get("/comments/get_latest_comments");
+        const response = await apiClient.get(`/comments/${postId}`);
         setCommentsArray(response.data);
       } catch (error) {
         console.log(error);
       }
     }
-    fetchLatestComments();
-  }, []);
+    fetchComments();
+  }, [postId]);
 
-  //Post comments in databae
+  //コメント投稿
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       const newComment = await apiClient.post("/comments/comment", {
-        textField: text,
+        comment: text,
+        postId: postId,
       });
-      setCommentsArray((prevComments) => [newComment.data, ...prevComments]);
+      setCommentsArray((prev) => [newComment.data, ...prev]);
       setText("");
     } catch (error) {
-      alert("Please login to post a comment.");
+      console.error(error);
+      alert("コメントを投稿するにはログインが必要です");
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
       <main className="container mx-auto py-4">
-        <div className="bg-white shadow-md rounded p-4 mb-4">
+        <div className="bg-white w-11/12 mx-auto shadow-md rounded p-4 mb-4">
           <form onSubmit={handleSubmit}>
             <textarea
               value={text}
@@ -54,9 +56,11 @@ const Timeline = () => {
             </button>
           </form>
         </div>
-        {commentsArray.map((comment) => (
-          <CommentPost key={comment.id} comment={comment} />
-        ))}
+        {commentsArray &&
+          commentsArray.length > 0 &&
+          commentsArray.map((comment) => (
+            <CommentPost key={comment.id} comment={comment} />
+          ))}
       </main>
     </div>
   );

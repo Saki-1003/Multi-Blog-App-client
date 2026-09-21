@@ -1,10 +1,8 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://nz-blog-backend.onrender.com/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
 export default apiClient;

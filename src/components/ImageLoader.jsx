@@ -2,37 +2,33 @@
 import React from "react";
 import { useState } from "react";
 import { Button } from "@mui/material";
-import storage from "@/lib/firebase";
-import { ref, uploadBytesResumable } from "firebase/storage";
 
-const ImageLoader = ({ blogTitle, handleFileChange }) => {
+const ImageLoader = ({ handleFileChange }) => {
   const [loading, setLoading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
-  const filePathArry = [];
 
-  function handleFileUpload(e) {
+  const uploadToR2 = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setLoading(true);
+
+    const response = await apiClient.post("/upload", formData);
+
+    setLoading(false);
+    setIsUploaded(true);
+
+    return response.data.url;
+  };
+
+  const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
-    files.forEach((file) => {
-      const filePath = "image/" + blogTitle + "_" + file.name;
-      filePathArry.push(filePath);
-      const storageRef = ref(storage, filePath);
-      const uploadImage = uploadBytesResumable(storageRef, file);
-      uploadImage.on(
-        "state_changed",
-        (snapshot) => {
-          setLoading(true);
-        },
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          setLoading(false);
-          setIsUploaded(true);
-        }
-      );
-    });
-    handleFileChange(filePathArry.join(","));
-  }
+
+    const file = files[0];
+    const url = await uploadToR2(file);
+
+    handleFileChange(url);
+  };
 
   return (
     <>
@@ -69,8 +65,9 @@ const ImageLoader = ({ blogTitle, handleFileChange }) => {
                 <input
                   type="file"
                   multiple
-                  accept="iimage/png, image/jpeg, image/jpg"
+                  accept="image/png, image/jpeg, image/jpg"
                   className="absolute top-0 left-0 w-full h-full cursor-pointer opacity-0"
+                  onChange={handleFileUpload}
                 />
               </Button>
             </div>

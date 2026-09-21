@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import Cookies from "js-cookie";
 import Header from "@/components/Header";
 import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
@@ -10,27 +11,23 @@ import { AuthContext } from "@/context/authContext";
 const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const { login, adminLogin } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const router = useRouter();
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      const response = await apiClient.post("/auth/login", {
-        email,
-        password,
-      });
-      if (response.data.isAdmin) {
-        const token = response.data.token;
-        const isAdmin = response.data.isAdmin;
-        adminLogin(token, isAdmin);
-      }
-      const token = response.data.token;
-      login(token);
-      router.push("/");
+      await login(email, password);
+      router.push("/dashboard");
     } catch (error) {
-      alert("Incorrect email or password.");
+      console.error("Login failed:", error);
+      const backendMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "ログインに失敗しました";
+
+      alert(backendMessage);
     }
   }
 
@@ -42,8 +39,8 @@ const Login = () => {
         className="flex flex-col justify-center py-12 sm:px-6 lg:px-8"
       >
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Login
+          <h2 className="mt-6 text-center text-3xl tracking-wider font-semibold text-indigo-700">
+            ログイン
           </h2>
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -54,7 +51,7 @@ const Login = () => {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email
+                  Eメール
                 </label>
                 <input
                   onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +68,7 @@ const Login = () => {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+                  パスワード
                 </label>
                 <input
                   onChange={(e) => setPassword(e.target.value)}
@@ -88,13 +85,13 @@ const Login = () => {
                   type="submit"
                   className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  LOGIN
+                  ログイン
                 </button>
                 <Link
                   href="/signup"
-                  className="text-xs hover:text-blue-700 hover:underline text-right block mt-2"
+                  className="text-blue-700 hover:underline text-right block mt-4"
                 >
-                  Don&apos;t have an account? Sign Up here!
+                  アカウントをお持ちでない方はこちら
                 </Link>
               </div>
             </form>

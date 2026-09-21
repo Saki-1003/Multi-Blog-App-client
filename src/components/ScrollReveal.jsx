@@ -1,30 +1,39 @@
 "use client";
-import React from "react";
 import { useEffect, useRef } from "react";
 
-const ScrollReveal = ({ children, move, delay, duration, className }) => {
+const ScrollReveal = ({
+  children,
+  move = "bottom",
+  delay = 200,
+  duration = 1400,
+  className,
+}) => {
   const sectionRef = useRef(null);
+
   useEffect(() => {
     async function animate() {
       if (sectionRef.current) {
-        //Dynamic import
         const sr = (await import("scrollreveal")).default;
+
         sr().reveal(sectionRef.current, {
-          duration: duration,
-          delay: delay,
+          duration,
+          delay,
           opacity: 0,
           origin: move,
-          distance: "100px",
-          viewFactor: 0.2,
+          distance: "20px",
+          easing: "ease-out",
+          cleanup: true,
         });
       }
     }
     animate();
-  }, [sectionRef]);
+  }, []);
+
   return (
-    <div className={`${className}`} ref={sectionRef}>
+    <div ref={sectionRef} className={className}>
       {children}
     </div>
   );
 };
+
 export default ScrollReveal;

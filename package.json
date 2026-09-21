@@ -17,6 +17,7 @@
     "axios": "^1.7.5",
     "firebase": "^10.13.1",
     "flowbite-react": "^0.10.1",
+    "js-cookie": "^3.0.8",
     "mui-image-slider": "^1.0.10",
     "next": "^14.2.16",
     "react": "^18",

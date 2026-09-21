@@ -3,23 +3,24 @@ import React from "react";
 import Header from "@/components/Header";
 import BlogCard from "@/components/BlogCard";
 import { useContext } from "react";
-import { BlogDataContext } from "@/context/blogDataContext";
-import Timeline from "@/components/Timeline";
+import { BlogSiteContext } from "@/context/blogSiteContext";
+import Footer from "@/components/Footer";
 
 const BlogPage = () => {
-  const { blogData } = useContext(BlogDataContext);
+  const { blogData } = useContext(BlogSiteContext);
 
   return (
     <>
       <Header />
-      <section className="bg-teal-100 w-full h-lvh">
-        <div className="pt-10 container mx-auto flex justify-center gap-4 xs:flex-wrap">
+      <section className="w-full min-h-screen pb-28">
+        <div className="w-5/6 pt-14 mx-auto flex justify-center gap-4 xs:flex-wrap">
           {blogData &&
             blogData.map((article) => (
               <BlogCard key={article.title} article={article} />
             ))}
         </div>
       </section>
+      <Footer />
     </>
   );
 };

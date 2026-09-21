@@ -1,19 +1,25 @@
 import { AuthProvider } from "@/context/authContext";
+import { BlogSiteProvider } from "@/context/blogSiteContext";
 import "./globals.css";
-import { BlogDataProvider } from "@/context/blogDataContext";
+import { Nunito } from "next/font/google";
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700"],
+});
 
 export const metadata = {
-  title: "NZ Travel Blog",
-  description: "Blog and photo gallery mainly on NZ South Island. ",
+  title: "Folio",
+  description: "Multi blog app ",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <AuthProvider>
-        <BlogDataProvider>
-          <body>{children}</body>
-        </BlogDataProvider>
+        <BlogSiteProvider>
+          <body className={nunito.className}>{children}</body>
+        </BlogSiteProvider>
       </AuthProvider>
     </html>
   );

@@ -1,16 +1,14 @@
 import React from "react";
 import Link from "next/link";
-import useFileFetch from "@/hook/useFileFetch";
 
 const BlogCard = ({ article }) => {
-  const urlArray = useFileFetch(article);
   return (
-    <div className="w-full bg-white pt-4 rounded-lg shadow-md sm:w-2/4 md:w-2/4 lg:w-1/4 hover:scale-[103%]">
+    <div className="bg-stone-100 border border-gray-200 pt-4 rounded-lg shadow-md sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 hover:scale-[103%]">
       <Link href={`/blog/${article.title.replaceAll(" ", "_")}`}>
         <figure className="text-center mx-4">
           <img
-            className="text-center w-full h-52 rounded-lg object-cover"
-            src={urlArray[0]}
+            className="text-center w-full h-52 rounded-lg object-cover hover:scale-[103%]"
+            src={article.file}
             alt={`image of ${article.title}`}
           />
         </figure>

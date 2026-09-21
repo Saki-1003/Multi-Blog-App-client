@@ -1,58 +1,43 @@
 "use client";
 import { createContext } from "react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import apiClient from "@/lib/apiClient";
 
 export const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      apiClient.defaults.headers["authorization"] = `Bearer ${token}`;
-      apiClient.get("/users/find_user").then((response) => {
-        setUser(response.data.matchingUser);
+    // Cookie に token があるかどうかは API 側で判定してもらう
+    apiClient
+      .get("/users/find_user", { withCredentials: true })
+      .then((response) => {
+        setUser(response.data.user);
+      })
+      .catch(() => {
+        setUser(null);
       });
-    }
   }, []);
 
-  const adminLogin = async (token, isAdmin) => {
-    localStorage.setItem("auth_token", token);
-    apiClient.defaults.headers["authorization"] = `Bearer ${token}`;
-    localStorage.setItem("is_admin", true);
-    apiClient.defaults.headers["is_admin"] = isAdmin;
-    try {
-      apiClient.get("/users/find_user").then((response) => {
-        setUser(response.data.user);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const login = async (token) => {
-    localStorage.setItem("auth_token", token);
-    apiClient.defaults.headers["authorization"] = `Bearer ${token}`;
-    try {
-      apiClient.get("/users/find_user").then((response) => {
-        setUser(response.data.user);
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const login = async (email, password) => {
+    // token は HttpOnly Cookie としてバックエンドがセットする
+    await apiClient.post("/auth/login", { email, password });
+
+    const response = await apiClient.get("/users/find_user");
+    setUser(response.data.user);
   };
 
-  const logout = () => {
-    localStorage.removeItem("auth_token");
-    delete apiClient.defaults.headers["authorization"];
-    localStorage.removeItem("is_admin");
-    delete apiClient.defaults.headers["is_admin"];
+  const logout = async () => {
+    await apiClient.post("/auth/logout", {}, { withCredentials: true });
     setUser(null);
+    router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ adminLogin, login, logout, user }}>
+    <AuthContext.Provider value={{ login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );
